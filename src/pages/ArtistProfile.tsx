@@ -35,7 +35,7 @@ const ArtistProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [artistRequest, setArtistRequest] = useState({ message: '', hasRequest: false });
+  const [artistRequest, setArtistRequest] = useState({ message: '', hasRequest: false, status: 'pending' });
 
   useEffect(() => {
     if (!user) {
@@ -98,7 +98,8 @@ const ArtistProfile = () => {
       
       setArtistRequest({
         message: data?.message || '',
-        hasRequest: !!data
+        hasRequest: !!data,
+        status: data?.status || 'pending'
       });
     } catch (error) {
       console.error('Error checking artist request:', error);
@@ -130,7 +131,7 @@ const ArtistProfile = () => {
         description: "Your artist request has been submitted for review",
       });
 
-      setArtistRequest({ message: '', hasRequest: true });
+      setArtistRequest({ message: '', hasRequest: true, status: 'pending' });
     } catch (error) {
       console.error('Error submitting artist request:', error);
       toast({
@@ -304,12 +305,42 @@ const ArtistProfile = () => {
                 <CardTitle>Become an Artist</CardTitle>
               </CardHeader>
               <CardContent>
-                {artistRequest.hasRequest ? (
+                {artistRequest.hasRequest && artistRequest.status === 'approved' ? (
+                  // Don't show anything for approved requests - the hasRole('artist') check above will handle this case
+                  null
+                ) : artistRequest.hasRequest && artistRequest.status === 'pending' ? (
                   <div className="text-center py-4">
-                    <div className="text-green-600 mb-2">✓ Request Submitted</div>
+                    <div className="text-yellow-600 mb-2">⏳ Request Pending</div>
                     <p className="text-sm text-gray-600">
                       Your artist request is under review. You'll be notified once it's processed.
                     </p>
+                  </div>
+                ) : artistRequest.hasRequest && artistRequest.status === 'rejected' ? (
+                  <div className="space-y-4">
+                    <div className="text-center py-2">
+                      <div className="text-red-600 mb-2">❌ Request Rejected</div>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Your previous request was not approved. You can submit a new request below.
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Request to become a featured artist and showcase your work in our gallery.
+                    </p>
+                    <textarea
+                      placeholder="Tell us why you'd like to become an artist on our platform..."
+                      value={artistRequest.message}
+                      onChange={(e) => setArtistRequest({ ...artistRequest, message: e.target.value })}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500 resize-none"
+                    />
+                    <Button
+                      onClick={submitArtistRequest}
+                      className="w-full"
+                      disabled={!artistRequest.message.trim()}
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Submit New Artist Request
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-4">
