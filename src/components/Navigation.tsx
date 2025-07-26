@@ -65,9 +65,11 @@ const Navigation = () => {
                     Add Artwork
                   </Link>
                 </Button>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  {user.email?.split('@')[0]}
+                <Button variant="ghost" size="sm" asChild className="flex items-center gap-2">
+                  <Link to="/artist-profile">
+                    <User className="w-4 h-4" />
+                    {user.email?.split('@')[0]}
+                  </Link>
                 </Button>
                 <Button variant="link" size="sm" onClick={signOut} className="flex items-center gap-1">
                   <LogOut className="w-3 h-3" />
@@ -121,9 +123,11 @@ const Navigation = () => {
                       Add Artwork
                     </Link>
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    {user.email?.split('@')[0]}
+                  <Button variant="ghost" asChild className="w-full justify-start flex items-center gap-2">
+                    <Link to="/artist-profile">
+                      <User className="w-4 h-4" />
+                      {user.email?.split('@')[0]}
+                    </Link>
                   </Button>
                   <Button variant="link" onClick={signOut} className="w-full justify-start flex items-center gap-1">
                     <LogOut className="w-3 h-3" />

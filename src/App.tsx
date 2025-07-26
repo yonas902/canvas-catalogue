@@ -9,6 +9,7 @@ import Gallery from "./pages/Gallery";
 import ArtworkDetail from "./pages/ArtworkDetail";
 import Artists from "./pages/Artists";
 import AddArtwork from "./pages/AddArtwork";
+import ArtistProfile from "./pages/ArtistProfile";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/artwork/:id" element={<ArtworkDetail />} />
             <Route path="/artists" element={<Artists />} />
             <Route path="/add-artwork" element={<AddArtwork />} />
+            <Route path="/artist-profile" element={<ArtistProfile />} />
             <Route path="/exhibitions" element={<Gallery />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />

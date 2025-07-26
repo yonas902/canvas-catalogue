@@ -159,7 +159,10 @@ const Artists = () => {
           <p className="text-gray-600 mb-6">
             Join our community and showcase your work to art enthusiasts worldwide.
           </p>
-          <Button className="bg-gray-900 text-white hover:bg-gray-800">
+          <Button 
+            className="bg-gray-900 text-white hover:bg-gray-800"
+            onClick={() => window.location.href = '/artist-profile'}
+          >
             Join as Artist
           </Button>
         </div>
