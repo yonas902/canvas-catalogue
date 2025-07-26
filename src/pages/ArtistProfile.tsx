@@ -38,17 +38,13 @@ const ArtistProfile = () => {
   const [artistRequest, setArtistRequest] = useState({ message: '', hasRequest: false });
 
   useEffect(() => {
-    if (user) {
-      fetchProfile();
-      checkArtistRequest();
+    if (!user) {
+      navigate('/auth');
+      return;
     }
-  }, [user]);
-
-  // Redirect if not authenticated
-  if (!user) {
-    navigate('/auth');
-    return null;
-  }
+    fetchProfile();
+    checkArtistRequest();
+  }, [user, navigate]);
 
   const fetchProfile = async () => {
     try {
@@ -250,6 +246,14 @@ const ArtistProfile = () => {
       setLoading(false);
     }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-600">Redirecting to login...</div>
+      </div>
+    );
+  }
 
   if (initialLoading) {
     return (
