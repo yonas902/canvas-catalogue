@@ -2,25 +2,33 @@ import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface ArtworkCardProps {
+interface Artwork {
   id: string;
   title: string;
-  artist: string;
-  year: number;
-  price: number;
-  image: string;
-  medium: string;
-  dimensions: string;
+  artist_name: string;
+  description: string | null;
+  medium: string | null;
+  dimensions: string | null;
+  year: number | null;
+  price: number | null;
+  image_url: string | null;
+  category: string | null;
+  is_available: boolean;
 }
 
-const ArtworkCard = ({ id, title, artist, year, price, image, medium, dimensions }: ArtworkCardProps) => {
+interface ArtworkCardProps {
+  artwork: Artwork;
+}
+
+const ArtworkCard = ({ artwork }: ArtworkCardProps) => {
+  const { id, title, artist_name, year, price, image_url, medium, dimensions } = artwork;
   return (
     <div className="group">
       <Link to={`/artwork/${id}`} className="block">
         <div className="relative overflow-hidden bg-gray-50 aspect-square">
           <img
-            src={image}
-            alt={`${title} by ${artist}`}
+            src={image_url || '/placeholder.svg'}
+            alt={`${title} by ${artist_name}`}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -45,14 +53,16 @@ const ArtworkCard = ({ id, title, artist, year, price, image, medium, dimensions
             {title}
           </h3>
         </Link>
-        <p className="text-sm text-gallery-accent">{artist}</p>
-        <p className="text-sm text-gallery-accent">{year}</p>
-        <p className="text-lg font-medium text-gallery-text mt-2">
-          ${price.toLocaleString()}
-        </p>
+        <p className="text-sm text-gallery-accent">{artist_name}</p>
+        {year && <p className="text-sm text-gallery-accent">{year}</p>}
+        {price && (
+          <p className="text-lg font-medium text-gallery-text mt-2">
+            ${price.toLocaleString()}
+          </p>
+        )}
         <div className="text-xs text-gallery-accent space-y-1">
-          <p>{medium}</p>
-          <p>{dimensions}</p>
+          {medium && <p>{medium}</p>}
+          {dimensions && <p>{dimensions}</p>}
         </div>
       </div>
     </div>

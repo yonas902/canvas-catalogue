@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Heart, Menu, X } from 'lucide-react';
+import { Search, Heart, Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { href: '/', label: 'Artworks' },
@@ -55,9 +57,22 @@ const Navigation = () => {
             <Button variant="ghost" size="icon">
               <Heart className="h-4 w-4" />
             </Button>
-            <Button variant="link" className="text-sm">
-              Sign In
-            </Button>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  {user.email?.split('@')[0]}
+                </Button>
+                <Button variant="link" size="sm" onClick={signOut} className="flex items-center gap-1">
+                  <LogOut className="w-3 h-3" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button variant="link" className="text-sm" asChild>
+                <Link to="/auth">Sign In</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -92,9 +107,22 @@ const Navigation = () => {
               </Link>
             ))}
             <div className="border-t border-gallery-border pt-3 mt-3">
-              <Button variant="link" className="text-sm w-full justify-start">
-                Sign In
-              </Button>
+              {user ? (
+                <div className="space-y-2">
+                  <Button variant="ghost" className="w-full justify-start flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    {user.email?.split('@')[0]}
+                  </Button>
+                  <Button variant="link" onClick={signOut} className="w-full justify-start flex items-center gap-1">
+                    <LogOut className="w-3 h-3" />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="link" className="text-sm w-full justify-start" asChild>
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>
