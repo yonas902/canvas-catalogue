@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Heart, Menu, X, User, LogOut } from 'lucide-react';
+import { Search, Heart, Menu, X, User, LogOut, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -59,6 +59,12 @@ const Navigation = () => {
             </Button>
             {user ? (
               <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" asChild className="flex items-center gap-2">
+                  <Link to="/add-artwork">
+                    <Plus className="w-4 h-4" />
+                    Add Artwork
+                  </Link>
+                </Button>
                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
                   <User className="w-4 h-4" />
                   {user.email?.split('@')[0]}
@@ -109,6 +115,12 @@ const Navigation = () => {
             <div className="border-t border-gallery-border pt-3 mt-3">
               {user ? (
                 <div className="space-y-2">
+                  <Button variant="outline" asChild className="w-full justify-start flex items-center gap-2">
+                    <Link to="/add-artwork">
+                      <Plus className="w-4 h-4" />
+                      Add Artwork
+                    </Link>
+                  </Button>
                   <Button variant="ghost" className="w-full justify-start flex items-center gap-2">
                     <User className="w-4 h-4" />
                     {user.email?.split('@')[0]}
