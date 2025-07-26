@@ -20,6 +20,8 @@ export function useUserRole() {
   const fetchUserRole = async () => {
     if (!user) return;
     
+    console.log('Fetching role for user:', user.id);
+    
     try {
       const { data, error } = await supabase
         .from('user_roles')
@@ -27,12 +29,16 @@ export function useUserRole() {
         .eq('user_id', user.id)
         .single();
 
+      console.log('Role query result:', { data, error });
+
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching user role:', error);
         return;
       }
 
-      setRole(data?.role || 'user');
+      const userRole = data?.role || 'user';
+      console.log('Setting user role to:', userRole);
+      setRole(userRole);
     } catch (error) {
       console.error('Error fetching user role:', error);
     } finally {

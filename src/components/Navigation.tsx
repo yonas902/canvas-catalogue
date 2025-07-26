@@ -9,7 +9,9 @@ const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const { hasRole } = useUserRole();
+  const { hasRole, role, loading } = useUserRole();
+  
+  console.log('Navigation component - user:', user?.id, 'role:', role, 'loading:', loading, 'hasRole(superuser):', hasRole('superuser'));
 
   const navItems = [
     { href: '/', label: 'Artworks' },
