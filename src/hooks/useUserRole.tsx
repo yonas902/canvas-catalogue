@@ -26,19 +26,27 @@ export function useUserRole() {
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', user.id);
 
       console.log('Role query result:', { data, error });
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching user role:', error);
         return;
       }
 
-      const userRole = data?.role || 'user';
-      console.log('Setting user role to:', userRole);
-      setRole(userRole);
+      // Handle multiple roles - get the highest role based on hierarchy
+      if (data && data.length > 0) {
+        const roleHierarchy = { user: 0, artist: 1, superuser: 2 };
+        const highestRole = data.reduce((prev, current) => {
+          return roleHierarchy[current.role as UserRole] > roleHierarchy[prev.role as UserRole] ? current : prev;
+        });
+        const userRole = highestRole.role as UserRole;
+        console.log('Setting user role to:', userRole);
+        setRole(userRole);
+      } else {
+        setRole('user');
+      }
     } catch (error) {
       console.error('Error fetching user role:', error);
     } finally {
