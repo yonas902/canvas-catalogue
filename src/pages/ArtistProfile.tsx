@@ -33,15 +33,17 @@ const ArtistProfile = () => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
+
   // Redirect if not authenticated
   if (!user) {
     navigate('/auth');
     return null;
   }
-
-  useEffect(() => {
-    fetchProfile();
-  }, [user]);
 
   const fetchProfile = async () => {
     try {
