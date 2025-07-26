@@ -22,10 +22,6 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const categories = ['All', 'Painting', 'Sculpture', 'Photography', 'Digital Art'];
 
-  useEffect(() => {
-    fetchArtworks();
-  }, []);
-
   const fetchArtworks = async () => {
     try {
       const { data, error } = await supabase
@@ -44,6 +40,10 @@ export default function Gallery() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchArtworks();
+  }, []);
 
   const filteredArtworks = selectedCategory === 'All' 
     ? artworks 
