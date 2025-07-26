@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -135,15 +136,11 @@ const Artists = () => {
                   <Button 
                     variant="outline" 
                     className="w-full"
-                    onClick={() => {
-                      // Future: Navigate to individual artist page
-                      toast({
-                        title: "Coming Soon",
-                        description: "Individual artist pages will be available soon.",
-                      });
-                    }}
+                    asChild
                   >
-                    View Profile
+                    <Link to={`/artist/${artist.id}`}>
+                      View Profile
+                    </Link>
                   </Button>
                 </div>
               </div>
