@@ -136,6 +136,8 @@ const ArtistProfile = () => {
           bio: profile.bio,
           avatar_url: avatarUrl,
           is_artist: profile.is_artist
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) throw error;
