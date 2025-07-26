@@ -44,7 +44,7 @@ const ArtistProfile = () => {
     }
     fetchProfile();
     checkArtistRequest();
-  }, [user, navigate]);
+  }, [user]);
 
   const fetchProfile = async () => {
     try {
