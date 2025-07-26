@@ -24,19 +24,22 @@ interface ArtistRequest {
 
 export default function SuperuserDashboard() {
   const { user } = useAuth();
-  const { role } = useUserRole();
+  const { role, loading: roleLoading } = useUserRole();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [requests, setRequests] = useState<ArtistRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Wait for role to load before checking
+    if (roleLoading) return;
+    
     if (role !== 'superuser') {
       navigate('/');
       return;
     }
     fetchRequests();
-  }, [role, navigate]);
+  }, [role, roleLoading, navigate]);
 
   const fetchRequests = async () => {
     try {
@@ -111,6 +114,14 @@ export default function SuperuserDashboard() {
       });
     }
   };
+
+  if (roleLoading) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
 
   if (role !== 'superuser') {
     return null;
