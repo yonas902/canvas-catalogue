@@ -14,6 +14,13 @@ interface Artist {
   is_artist: boolean;
   created_at: string;
   updated_at: string;
+  location?: string | null;
+  specialty?: string | null;
+  exhibitions?: string[] | null;
+  awards?: string[] | null;
+  education?: string | null;
+  website_url?: string | null;
+  social_links?: any;
 }
 
 interface Artwork {
@@ -152,12 +159,14 @@ const ArtistDetail = () => {
                 {artist.display_name || 'Anonymous Artist'}
               </h1>
               <p className="text-lg text-gray-600 mb-4">
-                Contemporary Abstract Artist
+                {artist.specialty || 'Contemporary Artist'}
               </p>
-              <div className="flex items-center text-gray-500 mb-6">
-                <MapPin size={16} className="mr-2" />
-                <span>Based in New York City</span>
-              </div>
+              {artist.location && (
+                <div className="flex items-center text-gray-500 mb-6">
+                  <MapPin size={16} className="mr-2" />
+                  <span>Based in {artist.location}</span>
+                </div>
+              )}
             </div>
             
             <p className="text-gray-700 leading-relaxed">
@@ -209,12 +218,16 @@ const ArtistDetail = () => {
           <div>
             <h2 className="text-2xl font-light text-gray-900 mb-6">Biography</h2>
             <p className="text-gray-700 leading-relaxed mb-6">
-              {artist.display_name || 'This artist'} is a contemporary artist whose work explores themes of modern life and human experience.
-              {artist.bio && ` ${artist.bio}`}
+              {artist.bio || `${artist.display_name || 'This artist'} is a contemporary artist whose work explores themes of modern life and human experience.`}
             </p>
+            {artist.education && (
+              <p className="text-gray-700 leading-relaxed mb-6">
+                <strong>Education:</strong> {artist.education}
+              </p>
+            )}
             <p className="text-gray-700 leading-relaxed">
-              Currently based in New York City, their work draws inspiration from urban environments
-              and the dynamic energy of city life. Their paintings often reflect themes
+              {artist.location ? `Currently based in ${artist.location}, their` : 'Their'} work draws inspiration from {artist.location ? 'the local environment and ' : ''}
+              the dynamic energy of artistic expression. Their paintings often reflect themes
               of connection, emotion, and the human experience in contemporary society.
             </p>
             <p className="text-gray-700 leading-relaxed mt-4">
@@ -228,38 +241,83 @@ const ArtistDetail = () => {
           <div>
             <h2 className="text-2xl font-light text-gray-900 mb-6">Exhibitions & Recognition</h2>
             
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Selected Exhibitions</h3>
-              <ul className="space-y-2">
-                <li className="text-gray-700 text-sm">
-                  2024 • "Contemporary Visions" • Museum of Modern Art, New York
-                </li>
-                <li className="text-gray-700 text-sm">
-                  2023 • "Abstract Expressions" • Guggenheim Museum, New York
-                </li>
-                <li className="text-gray-700 text-sm">
-                  2022 • "New York Artists" • The Met, New York
-                </li>
-                <li className="text-gray-700 text-sm">
-                  2020 • "Future of Art" • Tate Modern, London
-                </li>
-              </ul>
-            </div>
+            {artist.exhibitions && artist.exhibitions.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Selected Exhibitions</h3>
+                <ul className="space-y-2">
+                  {artist.exhibitions.map((exhibition, index) => (
+                    <li key={index} className="text-gray-700 text-sm">
+                      {exhibition}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Awards & Recognition</h3>
-              <ul className="space-y-2">
-                <li className="text-gray-700 text-sm">
-                  2024 • Artist of the Year - New York Art Critics Association
-                </li>
-                <li className="text-gray-700 text-sm">
-                  2022 • Innovation in Contemporary Art - The Art Institute
-                </li>
-                <li className="text-gray-700 text-sm">
-                  2020 • Rising Star Award - International Art Foundation
-                </li>
-              </ul>
-            </div>
+            {artist.awards && artist.awards.length > 0 && (
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Awards & Recognition</h3>
+                <ul className="space-y-2">
+                  {artist.awards.map((award, index) => (
+                    <li key={index} className="text-gray-700 text-sm">
+                      {award}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {artist.website_url && (
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Website</h3>
+                <a 
+                  href={artist.website_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  {artist.website_url}
+                </a>
+              </div>
+            )}
+
+            {artist.social_links && (
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Follow the Artist</h3>
+                <div className="flex gap-4">
+                  {(artist.social_links as any)?.instagram && (
+                    <a 
+                      href={`https://instagram.com/${(artist.social_links as any).instagram.replace('@', '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Instagram
+                    </a>
+                  )}
+                  {(artist.social_links as any)?.twitter && (
+                    <a 
+                      href={`https://twitter.com/${(artist.social_links as any).twitter.replace('@', '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Twitter
+                    </a>
+                  )}
+                  {(artist.social_links as any)?.linkedin && (
+                    <a 
+                      href={`https://linkedin.com/in/${(artist.social_links as any).linkedin}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

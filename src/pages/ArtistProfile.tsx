@@ -16,9 +16,18 @@ const ArtistProfile = () => {
     display_name: '',
     bio: '',
     avatar_url: '',
-    is_artist: false
+    is_artist: false,
+    location: '',
+    specialty: '',
+    exhibitions: [] as string[],
+    awards: [] as string[],
+    education: '',
+    website_url: '',
+    social_links: { instagram: '', twitter: '', linkedin: '' }
   });
   
+  const [newExhibition, setNewExhibition] = useState('');
+  const [newAward, setNewAward] = useState('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -49,7 +58,14 @@ const ArtistProfile = () => {
           display_name: data.display_name || '',
           bio: data.bio || '',
           avatar_url: data.avatar_url || '',
-          is_artist: data.is_artist || false
+          is_artist: data.is_artist || false,
+          location: data.location || '',
+          specialty: data.specialty || '',
+          exhibitions: data.exhibitions || [],
+          awards: data.awards || [],
+          education: data.education || '',
+          website_url: data.website_url || '',
+          social_links: (data.social_links as any) || { instagram: '', twitter: '', linkedin: '' }
         });
         setAvatarPreview(data.avatar_url);
       }
@@ -65,7 +81,7 @@ const ArtistProfile = () => {
     }
   };
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[] | object) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
 
@@ -135,7 +151,14 @@ const ArtistProfile = () => {
           display_name: profile.display_name,
           bio: profile.bio,
           avatar_url: avatarUrl,
-          is_artist: profile.is_artist
+          is_artist: profile.is_artist,
+          location: profile.location,
+          specialty: profile.specialty,
+          exhibitions: profile.exhibitions,
+          awards: profile.awards,
+          education: profile.education,
+          website_url: profile.website_url,
+          social_links: profile.social_links
         }, {
           onConflict: 'user_id'
         });
@@ -278,18 +301,61 @@ const ArtistProfile = () => {
           <div className="space-y-6">
             <h3 className="text-lg font-medium text-gray-900">Basic Information</h3>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Display Name *
-              </label>
-              <input
-                type="text"
-                placeholder="Enter your display name"
-                value={profile.display_name}
-                onChange={(e) => handleInputChange('display_name', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Display Name *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your display name"
+                  value={profile.display_name}
+                  onChange={(e) => handleInputChange('display_name', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. New York City"
+                  value={profile.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Specialty
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Contemporary Abstract Artist"
+                  value={profile.specialty}
+                  onChange={(e) => handleInputChange('specialty', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Education
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. MFA from Yale School of Art"
+                  value={profile.education}
+                  onChange={(e) => handleInputChange('education', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                />
+              </div>
             </div>
 
             <div>
@@ -305,6 +371,196 @@ const ArtistProfile = () => {
               />
               <div className="text-xs text-gray-500 mt-1">
                 {profile.bio.length}/1000 characters
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Website
+              </label>
+              <input
+                type="url"
+                placeholder="https://yourwebsite.com"
+                value={profile.website_url}
+                onChange={(e) => handleInputChange('website_url', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+              />
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-medium text-gray-900">Social Media</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Instagram
+                </label>
+                <input
+                  type="text"
+                  placeholder="@username"
+                  value={profile.social_links.instagram}
+                  onChange={(e) => handleInputChange('social_links', { 
+                    ...profile.social_links, 
+                    instagram: e.target.value 
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Twitter
+                </label>
+                <input
+                  type="text"
+                  placeholder="@username"
+                  value={profile.social_links.twitter}
+                  onChange={(e) => handleInputChange('social_links', { 
+                    ...profile.social_links, 
+                    twitter: e.target.value 
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  LinkedIn
+                </label>
+                <input
+                  type="text"
+                  placeholder="username"
+                  value={profile.social_links.linkedin}
+                  onChange={(e) => handleInputChange('social_links', { 
+                    ...profile.social_links, 
+                    linkedin: e.target.value 
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Exhibitions */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-medium text-gray-900">Exhibitions</h3>
+            
+            <div className="space-y-4">
+              {profile.exhibitions.map((exhibition, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={exhibition}
+                    onChange={(e) => {
+                      const updated = [...profile.exhibitions];
+                      updated[index] = e.target.value;
+                      handleInputChange('exhibitions', updated);
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const updated = profile.exhibitions.filter((_, i) => i !== index);
+                      handleInputChange('exhibitions', updated);
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+              ))}
+              
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Add exhibition (e.g. 2024 • 'Contemporary Visions' • Museum of Modern Art, New York)"
+                  value={newExhibition}
+                  onChange={(e) => setNewExhibition(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && newExhibition.trim()) {
+                      handleInputChange('exhibitions', [...profile.exhibitions, newExhibition.trim()]);
+                      setNewExhibition('');
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (newExhibition.trim()) {
+                      handleInputChange('exhibitions', [...profile.exhibitions, newExhibition.trim()]);
+                      setNewExhibition('');
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Awards */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-medium text-gray-900">Awards & Recognition</h3>
+            
+            <div className="space-y-4">
+              {profile.awards.map((award, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={award}
+                    onChange={(e) => {
+                      const updated = [...profile.awards];
+                      updated[index] = e.target.value;
+                      handleInputChange('awards', updated);
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const updated = profile.awards.filter((_, i) => i !== index);
+                      handleInputChange('awards', updated);
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+              ))}
+              
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Add award (e.g. 2024 • Artist of the Year - New York Art Critics Association)"
+                  value={newAward}
+                  onChange={(e) => setNewAward(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && newAward.trim()) {
+                      handleInputChange('awards', [...profile.awards, newAward.trim()]);
+                      setNewAward('');
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (newAward.trim()) {
+                      handleInputChange('awards', [...profile.awards, newAward.trim()]);
+                      setNewAward('');
+                    }
+                  }}
+                >
+                  Add
+                </Button>
               </div>
             </div>
           </div>
