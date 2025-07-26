@@ -4,13 +4,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Upload, X, User } from 'lucide-react';
+import { Upload, X, User, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUserRole } from '@/hooks/useUserRole';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ArtistProfile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { role, hasRole } = useUserRole();
   
   const [profile, setProfile] = useState({
     display_name: '',
@@ -32,10 +35,12 @@ const ArtistProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [artistRequest, setArtistRequest] = useState({ message: '', hasRequest: false });
 
   useEffect(() => {
     if (user) {
       fetchProfile();
+      checkArtistRequest();
     }
   }, [user]);
 
@@ -80,6 +85,63 @@ const ArtistProfile = () => {
       });
     } finally {
       setInitialLoading(false);
+    }
+  };
+
+  const checkArtistRequest = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('artist_requests')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      setArtistRequest({
+        message: data?.message || '',
+        hasRequest: !!data
+      });
+    } catch (error) {
+      console.error('Error checking artist request:', error);
+    }
+  };
+
+  const submitArtistRequest = async () => {
+    if (!user || !artistRequest.message.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a message for your artist request",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('artist_requests')
+        .insert({
+          user_id: user.id,
+          message: artistRequest.message.trim()
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Request Submitted",
+        description: "Your artist request has been submitted for review",
+      });
+
+      setArtistRequest({ message: '', hasRequest: true });
+    } catch (error) {
+      console.error('Error submitting artist request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit artist request",
+        variant: "destructive"
+      });
     }
   };
 
@@ -216,21 +278,60 @@ const ArtistProfile = () => {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="space-y-8">
-          {/* Artist Toggle */}
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-medium text-gray-900">Artist Status</h3>
-                <p className="text-gray-600 text-sm">
-                  Enable this to become a featured artist and showcase your work
-                </p>
+          {/* Artist Status & Request */}
+          {hasRole('artist') ? (
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900">Artist Status</h3>
+                  <p className="text-gray-600 text-sm">
+                    You are an approved artist and can showcase your work
+                  </p>
+                </div>
+                <Switch
+                  checked={profile.is_artist}
+                  onCheckedChange={(checked) => handleInputChange('is_artist', checked)}
+                />
               </div>
-              <Switch
-                checked={profile.is_artist}
-                onCheckedChange={(checked) => handleInputChange('is_artist', checked)}
-              />
             </div>
-          </div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Become an Artist</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {artistRequest.hasRequest ? (
+                  <div className="text-center py-4">
+                    <div className="text-green-600 mb-2">✓ Request Submitted</div>
+                    <p className="text-sm text-gray-600">
+                      Your artist request is under review. You'll be notified once it's processed.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-sm text-gray-600">
+                      Request to become a featured artist and showcase your work in our gallery.
+                    </p>
+                    <textarea
+                      placeholder="Tell us why you'd like to become an artist on our platform..."
+                      value={artistRequest.message}
+                      onChange={(e) => setArtistRequest({ ...artistRequest, message: e.target.value })}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-500 resize-none"
+                    />
+                    <Button
+                      onClick={submitArtistRequest}
+                      className="w-full"
+                      disabled={!artistRequest.message.trim()}
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Submit Artist Request
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Profile Photo */}
           <div className="space-y-4">

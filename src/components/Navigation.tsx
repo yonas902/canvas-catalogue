@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Heart, Menu, X, User, LogOut, Plus } from 'lucide-react';
+import { Search, Heart, Menu, X, User, LogOut, Plus, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { hasRole } = useUserRole();
 
   const navItems = [
     { href: '/', label: 'Artworks' },
@@ -59,6 +61,14 @@ const Navigation = () => {
             </Button>
             {user ? (
               <div className="flex items-center gap-2">
+                {hasRole('superuser') && (
+                  <Button variant="ghost" size="sm" asChild className="flex items-center gap-2 text-yellow-600">
+                    <Link to="/dashboard">
+                      <Crown className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" asChild className="flex items-center gap-2">
                   <Link to="/add-artwork">
                     <Plus className="w-4 h-4" />
@@ -117,6 +127,14 @@ const Navigation = () => {
             <div className="border-t border-gallery-border pt-3 mt-3">
               {user ? (
                 <div className="space-y-2">
+                  {hasRole('superuser') && (
+                    <Button variant="ghost" asChild className="w-full justify-start flex items-center gap-2 text-yellow-600">
+                      <Link to="/dashboard">
+                        <Crown className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                  )}
                   <Button variant="outline" asChild className="w-full justify-start flex items-center gap-2">
                     <Link to="/add-artwork">
                       <Plus className="w-4 h-4" />
